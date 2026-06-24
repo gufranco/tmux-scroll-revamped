@@ -4,7 +4,7 @@
 
 **Mouse wheel that does the right thing: scroll vim and less directly, copy-mode everywhere else.**
 
-[![Tests](https://github.com/gufranco/tmux-scroll-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/gufranco/tmux-scroll-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](https://github.com/gufranco/tmux-scroll-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/gufranco/tmux-scroll-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
 
 </div>
 
