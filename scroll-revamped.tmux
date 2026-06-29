@@ -3,9 +3,11 @@
 # scroll-revamped.tmux: TPM entry point.
 #
 # Binds the mouse wheel so full-screen apps (vim, less, htop) get the wheel
-# directly while everything else enters copy-mode. On tmux 3.1+ the routing is a
-# native regex match over #{pane_current_command}, so there is no per-event fork;
-# older tmux falls back to a check command.
+# directly while everything else enters copy-mode. A pane on the alternate screen
+# is a full-screen app by definition, so by default it gets the wheel even when
+# its command is not in the passthrough list. On tmux 3.1+ the routing is a
+# native format match over #{alternate_on} and #{pane_current_command}, so there
+# is no per-event fork; older tmux falls back to a check command.
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCROLL_CMD="${CURRENT_DIR}/src/scroll.sh"
@@ -25,12 +27,20 @@ fi
 ver="$(tmux -V | sed -E 's/^tmux ([0-9]+\.[0-9]+).*/\1/')"
 ge() { [[ "$(printf '%s\n%s\n' "${2}" "${1}" | sort -V | head -n1)" == "${2}" ]]; }
 
+# Alternate-screen passthrough: a pane on the alternate screen is a full-screen
+# app, so it owns the wheel. On by default; set off to route purely by app list.
+alt_on="$(get_opt "@scroll_revamped_passthrough_alternate" "on")"
+
 if ge "${ver}" "3.1"; then
   pattern="$("${SCROLL_CMD}" pattern)"
-  cond="#{?#{||:#{pane_in_mode},#{m/r:${pattern},#{pane_current_command}}},1,0}"
+  match="#{m/r:${pattern},#{pane_current_command}}"
+  [[ "${alt_on}" == "on" ]] && match="#{||:#{alternate_on},${match}}"
+  cond="#{?#{||:#{pane_in_mode},${match}},1,0}"
   tmux bind-key -n WheelUpPane if-shell -F "${cond}" "send-keys -M" "copy-mode -e; send-keys -M"
 else
-  tmux bind-key -n WheelUpPane if-shell "${SCROLL_CMD} check '#{pane_current_command}'" "send-keys -M" "copy-mode -e; send-keys -M"
+  alt_flag="0"
+  [[ "${alt_on}" == "on" ]] && alt_flag="#{alternate_on}"
+  tmux bind-key -n WheelUpPane if-shell "${SCROLL_CMD} check '#{pane_current_command}' '${alt_flag}'" "send-keys -M" "copy-mode -e; send-keys -M"
 fi
 
 tmux bind-key -n WheelDownPane send-keys -M

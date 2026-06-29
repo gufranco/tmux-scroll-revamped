@@ -4,13 +4,13 @@
 
 **Mouse wheel that does the right thing: scroll vim and less directly, copy-mode everywhere else.**
 
-[![Tests](https://github.com/tmux-revamped/tmux-scroll-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/tmux-revamped/tmux-scroll-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
+[![Tests](https://github.com/tmux-revamped/tmux-scroll-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/tmux-revamped/tmux-scroll-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md)
 
 </div>
 
-**native routing** · **no per-event fork** · **tmux 1.9 to 3.5** · **35** tests · **95%+** coverage
+**native routing** · **no per-event fork** · **tmux 1.9 to 3.5** · **42** tests · **95%+** coverage
 
-Makes the mouse wheel behave. When the foreground program scrolls itself, vim, less, man, htop, the wheel goes straight to it. Everywhere else, the wheel enters copy-mode and scrolls the scrollback. On tmux 3.1+ the decision is a **native regex match** over `#{pane_current_command}`, so unlike mighty-scroll there is no process-tree walk and no shell forked on every wheel tick.
+Makes the mouse wheel behave. When the foreground program scrolls itself, vim, less, man, htop, the wheel goes straight to it. Everywhere else, the wheel enters copy-mode and scrolls the scrollback. Any full-screen app on the alternate screen, a TUI like Claude Code or a pager, owns the wheel even when its command is not on the list, so the wheel never falls through to the scrollback behind it. On tmux 3.1+ the decision is a **native format match** over `#{alternate_on}` and `#{pane_current_command}`, so unlike mighty-scroll there is no process-tree walk and no shell forked on every wheel tick.
 
 Built from [tmux-plugin-template](https://github.com/tmux-revamped/tmux-plugin-template).
 
@@ -20,14 +20,14 @@ Built from [tmux-plugin-template](https://github.com/tmux-revamped/tmux-plugin-t
 <td><strong>No process walk</strong><br>Reads <code>#{pane_current_command}</code> directly instead of crawling the process tree.</td>
 </tr>
 <tr>
-<td><strong>Knows your apps</strong><br>A long default list of full-screen programs, fully configurable.</td>
+<td><strong>Knows your apps</strong><br>Detects full-screen apps by the alternate screen, plus a configurable list for the rest.</td>
 <td><strong>Graceful fallback</strong><br>Older tmux without regex match uses a tiny check command instead.</td>
 </tr>
 </table>
 
 ## Usage
 
-Install it and scroll. Over vim, less, htop, and friends the wheel scrolls the app. Over a shell prompt it scrolls the tmux history. Nothing to press.
+Install it and scroll. Over vim, less, htop, a full-screen TUI, and friends the wheel scrolls the app. Over a shell prompt it scrolls the tmux history. Nothing to press.
 
 ## Install
 
@@ -44,6 +44,7 @@ Press `prefix + I`. Mouse mode is enabled automatically unless you opt out.
 | Option | Default | Meaning |
 |--------|---------|---------|
 | `@scroll_revamped_passthrough_apps` | a long default list (vim, nvim, less, man, htop, fzf, lazygit, ...) | programs that receive the wheel directly |
+| `@scroll_revamped_passthrough_alternate` | `on` | pass the wheel to any app on the alternate screen, even when it is not on the list; set to `off` to route purely by the app list |
 | `@scroll_revamped_mouse` | `on` | set to `off` to manage `mouse` yourself |
 | `@scroll_revamped_speed` | unset | a positive integer caps copy-mode wheel scrolling to that many lines per tick, taming fast trackpad flicks; unset keeps tmux's default |
 

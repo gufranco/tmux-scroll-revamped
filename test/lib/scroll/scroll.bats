@@ -31,6 +31,20 @@ teardown() {
   [ "${status}" -eq 1 ]
 }
 
+@test "scroll_is_passthrough passes through any alternate-screen app" {
+  run scroll_is_passthrough "claude" "vim less man" "1"
+  [ "${status}" -eq 0 ]
+  run scroll_is_passthrough "ssh" "vim less man" "1"
+  [ "${status}" -eq 0 ]
+}
+
+@test "scroll_is_passthrough on the primary screen falls back to the app list" {
+  run scroll_is_passthrough "vim" "vim less man" "0"
+  [ "${status}" -eq 0 ]
+  run scroll_is_passthrough "claude" "vim less man" "0"
+  [ "${status}" -eq 1 ]
+}
+
 @test "scroll_valid_speed accepts positive integers only" {
   [[ "$(scroll_valid_speed 3)" == "3" ]]
   [[ "$(scroll_valid_speed 12)" == "12" ]]

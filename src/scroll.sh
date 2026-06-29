@@ -2,11 +2,13 @@
 #
 # scroll.sh: command dispatcher for tmux-scroll-revamped.
 #
-# Usage: scroll.sh pattern | check <command>
+# Usage: scroll.sh pattern | check <command> [alternate]
 #
 # pattern prints the regex the fast tmux-native binding embeds. check is the
 # fallback used by older tmux without regex match: exit 0 when the foreground
-# command should receive the wheel directly, exit 1 to enter copy-mode.
+# command should receive the wheel directly, exit 1 to enter copy-mode. The
+# optional alternate flag ("1" when the pane is on the alternate screen) forces
+# passthrough so any full-screen app owns the wheel.
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
@@ -24,7 +26,7 @@ scroll_apps() {
 main() {
   case "${1:-}" in
     pattern) scroll_build_pattern "$(scroll_apps)" ;;
-    check)   scroll_is_passthrough "${2:-}" "$(scroll_apps)" ;;
+    check)   scroll_is_passthrough "${2:-}" "$(scroll_apps)" "${3:-}" ;;
     speed)   scroll_valid_speed "$(get_tmux_option "@scroll_revamped_speed" "")" ;;
     *)       return 0 ;;
   esac

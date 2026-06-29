@@ -38,6 +38,13 @@ teardown() {
   [ "${status}" -eq 1 ]
 }
 
+@test "scroll.sh - check passes through an alternate-screen app off the list" {
+  run main check claude 1
+  [ "${status}" -eq 0 ]
+  run main check claude 0
+  [ "${status}" -eq 1 ]
+}
+
 @test "scroll.sh - speed echoes a configured throttle" {
   run main speed
   [[ -z "${output}" ]]

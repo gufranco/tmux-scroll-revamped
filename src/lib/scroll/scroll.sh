@@ -20,14 +20,17 @@ scroll_build_pattern() {
   printf '^(%s)$' "${alt}"
 }
 
-# scroll_is_passthrough APP APPS -> exit 0 when APP is one of the space or comma
-# separated APPS, else exit 1. Used by the fallback binding on tmux without
-# regex match support.
+# scroll_is_passthrough APP APPS [ALTERNATE] -> exit 0 when the foreground app
+# should receive the wheel directly, else exit 1. Passes through when ALTERNATE
+# is "1" (the pane is on the alternate screen, so a full-screen app owns the
+# wheel) or when APP is one of the space or comma separated APPS. Used by the
+# fallback binding on tmux without regex match support.
 scroll_is_passthrough() {
-  local app="${1}" a
+  local app="${1}" apps="${2}" alternate="${3:-}" a
+  [[ "${alternate}" == "1" ]] && return 0
   while IFS= read -r a; do
     [[ -n "${a}" && "${a}" == "${app}" ]] && return 0
-  done <<< "$(printf '%s' "${2}" | tr ',[:space:]' '\n')"
+  done <<< "$(printf '%s' "${apps}" | tr ',[:space:]' '\n')"
   return 1
 }
 

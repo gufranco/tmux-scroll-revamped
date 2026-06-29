@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-06-29
+
+### Added
+
+- `@scroll_revamped_passthrough_alternate` (default `on`) passes the wheel to any
+  app on the alternate screen, so full-screen TUIs that are not on the app list,
+  such as Claude Code, scroll themselves instead of dropping into copy-mode over
+  the primary-screen scrollback behind them. Set it `off` to route purely by the
+  app list.
+
+### Fixed
+
+- A full-screen app not on the passthrough list received copy-mode scrolling of
+  the scrollback behind it instead of the wheel. The routing now also keys on
+  `#{alternate_on}`.
+
 ## [1.1.0] - 2026-06-23
 
 ### Added
